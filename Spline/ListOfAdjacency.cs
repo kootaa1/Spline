@@ -9,9 +9,7 @@ namespace Spline.sources
     class ListOfAdjacency
     {
         //List<List<int>> list;
-        //int[] huy = new int[5];
         public List<int>[] list;
-        //int[][] list;
         public void fillingList(Grid grid)
         {
             int sizeX = grid.getXSize(), sizeY = grid.getYSize();

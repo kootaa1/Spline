@@ -9,7 +9,7 @@
         Title="MainWindow" Height="450" Width="800">
     <DockPanel RenderTransformOrigin="0.5,0.5">
         <WPF:OpenGLControl Width="678"/>
-        <DockPanel Width="129">
+        <DockPanel Width="108">
             <StackPanel HorizontalAlignment="Left" Height="251" VerticalAlignment="Top" Width="53">
                 <Label x:Name="label" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.763,0.5"/>
                 <Label x:Name="label1" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top"/>
