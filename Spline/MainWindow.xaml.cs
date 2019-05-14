@@ -24,5 +24,10 @@ namespace Spline
         {
             InitializeComponent();
         }
+
+        private void OpenGLControl_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -6,18 +6,33 @@
         xmlns:local="clr-namespace:Spline"
         xmlns:WPF="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF" x:Class="Spline.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <DockPanel RenderTransformOrigin="0.5,0.5">
-        <WPF:OpenGLControl Width="678"/>
-        <DockPanel Width="108">
-            <StackPanel HorizontalAlignment="Left" Height="251" VerticalAlignment="Top" Width="53">
-                <Label x:Name="label" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.763,0.5"/>
-                <Label x:Name="label1" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <Label x:Name="label2" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <Label x:Name="label3" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <Label x:Name="label4" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        Title="MainWindow" Height="450" Width="800" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.IsSharedSizeScope="True">
+    <Grid MinWidth="1">
+        <WPF:OpenGLControl x:Name="OpenGlControl1" Grid.IsSharedSizeScope="True" Loaded="OpenGLControl_Loaded" MinWidth="400" Margin="0,0,119,0"/>
+        <DockPanel Margin="0" HorizontalAlignment="Right" Width="110" LastChildFill="False">
+            <StackPanel ScrollViewer.VerticalScrollBarVisibility="Disabled" MaxWidth="110" Grid.IsSharedSizeScope="True" HorizontalAlignment="Right">
+                <DockPanel Margin="0,0,0,0" Height="251">
+                    <StackPanel Height="251" VerticalAlignment="Top" Width="53" Panel.ZIndex="7">
+                        <Label x:Name="label" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.763,0.5"/>
+                        <Label x:Name="label1" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="label2" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="label3" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Label x:Name="label4" Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    </StackPanel>
+                    <WPF:OpenGLControl x:Name="OpenGLControl2" HorizontalAlignment="Left" Height="251" VerticalAlignment="Top" Width="51"/>
+                </DockPanel>
+                <Button x:Name="button" Content="Button"/>
+                <DockPanel Height="20">
+                    <TextBlock x:Name="textBlockX" Height="25" TextWrapping="Wrap" Text="X:" VerticalAlignment="Top" Width="20"/>
+                    <TextBox x:Name="textBoxX" TextWrapping="Wrap" Text="TextBox" Width="90"/>
+                </DockPanel>
+                <DockPanel Height="20">
+                    <TextBlock x:Name="textBlockY" Height="25" TextWrapping="Wrap" Text="Y:" VerticalAlignment="Top" Width="20"/>
+                    <TextBox x:Name="textBoxY" TextWrapping="Wrap" Text="TextBox" Width="90"/>
+                </DockPanel>
+                <Button x:Name="button1" Content="Button"/>
+                <TextBox x:Name="textBox1" Height="23" TextWrapping="Wrap" Text="TextBox"/>
             </StackPanel>
-            <WPF:OpenGLControl HorizontalAlignment="Left" Height="251" VerticalAlignment="Top" Width="58"/>
         </DockPanel>
-    </DockPanel>
+    </Grid>
 </Window>
