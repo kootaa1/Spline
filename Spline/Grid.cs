@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Windows;
 
@@ -24,6 +25,15 @@ namespace Spline.sources
         public List<double> x, y, f;
         public int Qx, Qy, Qf;
 
+        public Grid()
+        {
+            points = new List<Point>();
+            omega = new List<double>();
+            x = new List<double>();
+            y = new List<double>();
+            f = new List<double>();
+        }
+
         public int getXSize()
         {
             return x.Count;
@@ -32,7 +42,7 @@ namespace Spline.sources
         {
             return x.Count;
         }
-        public void input(string path)
+        public bool inputSpline(string path)
         {
             try
             {
@@ -43,7 +53,7 @@ namespace Spline.sources
                 string[] splitArray = buf.Split();
                 foreach (string s in splitArray)
                 {
-                    x.Add(double.Parse(s));
+                    x.Add(double.Parse(s, CultureInfo.InvariantCulture));
                 }
                 buf = sr.ReadLine();
                 Qy = int.Parse(buf);
@@ -51,7 +61,7 @@ namespace Spline.sources
                 splitArray = buf.Split();
                 foreach (string s in splitArray)
                 {
-                    y.Add(double.Parse(s));
+                    y.Add(double.Parse(s, CultureInfo.InvariantCulture));
                 }
                 buf = sr.ReadLine();
                 Qf = int.Parse(buf);
@@ -60,19 +70,23 @@ namespace Spline.sources
                 {
                     buf = sr.ReadLine();
                     splitArray = buf.Split();
-                    points.Add(new Point(double.Parse(splitArray[0]), double.Parse(splitArray[1])));
-                    f.Add(double.Parse(splitArray[2]));
-                }
+                    points.Add(new Point(double.Parse(splitArray[0], CultureInfo.InvariantCulture),
+                        double.Parse(splitArray[1], CultureInfo.InvariantCulture)));
+                    f.Add(double.Parse(splitArray[2], CultureInfo.InvariantCulture));
+                    omega.Add(1);
+                } 
+                return true;
             }
             catch (Exception e)
             {
                 if (e is ArgumentNullException || e is InvalidDataException
                     || e is FormatException || e is OverflowException)
                 {
-                    MessageBox.Show("Ошибка во входных данных, перепроверь.");
-                    App.Current.Shutdown();
+                    MessageBox.Show("Ошибка во входных данных, перепроверь. \n" + e.ToString());
+                    return false;
                 }
             }
+            return false;
         }
 
         public int calculatePosition(int i, int j)

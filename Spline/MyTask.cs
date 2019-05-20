@@ -7,14 +7,34 @@ using System.Windows;
 
 namespace Spline.sources
 {
-    class Task
+    class MyTask
     {
         Matrix matrix;
         double[] f;
-        ListOfAdjacency list;
+        double[] result;
         Grid grid;
         Basis basis;
+        LOS los;
+        
+        public MyTask()
+        {
+            grid = new Grid();
+            basis = new Basis();
+            los = new LOS();
+        }
 
+        public void Make(string filePath)
+        {
+            if (grid.inputSpline(filePath))
+            {
+                Array.Resize(ref f, 4 * grid.getXSize() * grid.getYSize());
+                matrix = new Matrix(4 * grid.getXSize() * grid.getYSize());
+                matrix.profileDefining(grid);
+                MatrixFilling();
+                los = new LOS();
+                result = los.makeSLAU(matrix, f);
+            }
+        }
         void MatrixFilling()
         {
             int sizeX = grid.getXSize() - 1, sizeY = grid.getYSize() - 1;
@@ -44,7 +64,7 @@ namespace Spline.sources
                         MessageBox.Show("I can't find points on interval [" + grid.x[i].ToString() +
                             ", " + grid.x[i + 1].ToString() + "] * [" + grid.y[j].ToString() + ", " +
                             grid.y[j + 1].ToString() + "]\n you must fix it, before do something. \n");
-                        App.Current.Shutdown();
+                        //App.Current.Shutdown();
                         //Console.WriteLine("I can't find points on interval [" + grid.x[i].ToString() +
                         //    ", " + grid.x[i + 1].ToString() + "] * [" + grid.y[j].ToString() + ", " +
                         //    grid.y[j + 1].ToString() + "]\n you must fix it, before do something. \n" +
@@ -97,7 +117,7 @@ namespace Spline.sources
                 }
             }
         }
-        double valueInPoint(double x, double y, double[] result)
+        public double valueInPoint(double x, double y)
         {
             int maxI = grid.getXSize() - 1, maxJ = grid.getYSize() - 1;
             int i = 0, j = 0;

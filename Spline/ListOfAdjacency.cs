@@ -15,6 +15,10 @@ namespace Spline.sources
             int sizeX = grid.getXSize(), sizeY = grid.getYSize();
             int maxCount = sizeX * sizeY;
             Array.Resize(ref list, 4 * sizeX * sizeY);
+            for (int i = 0; i < list.Length; i++)
+            {
+                list[i] = new List<int>();
+            }
             for (int j = 0; j < sizeY; ++j)
             {
                 for (int i = 0; i < sizeX; ++i)

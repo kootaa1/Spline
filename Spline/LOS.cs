@@ -110,8 +110,7 @@ namespace Spline.sources
             }
         }
 
-        double[] makeSLAU(ref double[] _di, ref double[] _al, ref double[] _au,
-    ref int[] _ia, ref int[] _ja, ref double[] _F)
+        public double[] makeSLAU(Matrix matrix, double[] rightPartF )
         {
             //ig.resize(N + 1, 0);
             Array.Resize(ref ig, N + 1);
@@ -128,12 +127,12 @@ namespace Spline.sources
             //jg.resize(ig[N], 0);
             Array.Resize(ref jg, N);
             nullVector(ref jg);
-            ig = _ia;
-            jg = _ja;
-            di = _di;
-            ggl = _al;
-            ggu = _au;
-            N = _di.Length;
+            ig = matrix.ia.ToArray();
+            jg = matrix.ja.ToArray();
+            di = matrix.di.ToArray();
+            ggl = matrix.al.ToArray();
+            ggu = matrix.au.ToArray();
+            N = matrix.di.Count;
             //vec.resize(N, 0);
             Array.Resize(ref vec, N);
             nullVector(ref vec);
@@ -167,7 +166,7 @@ namespace Spline.sources
             //Ax.resize(N, 0);
             Array.Resize(ref Ax, N);
             nullVector(ref Ax);
-            vec = _F;
+            vec = rightPartF;
             Run();
             return x_k;
         }

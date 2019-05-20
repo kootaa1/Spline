@@ -9,8 +9,8 @@ namespace Spline.sources
 {
     class Matrix
     {
-        private List<double> di, al, au, f;
-        private List<int> ia, ja;
+        public List<double> di, al, au, f;
+        public List<int> ia, ja;
 
         public Matrix(int n)
         {
@@ -62,10 +62,11 @@ namespace Spline.sources
             }
         }
 
-        void profileDefining(ListOfAdjacency listOfAdjacency, Grid grid)
+        public void profileDefining(Grid grid)
         {
             int n = 4 * grid.getXSize() * grid.getYSize();
             int k = 0;
+            ListOfAdjacency listOfAdjacency = new ListOfAdjacency();
             listOfAdjacency.fillingList(grid);
             ia.Add(0);
             for (int i = 0; i < n; i++)
