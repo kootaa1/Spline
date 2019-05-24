@@ -11,7 +11,7 @@ namespace Spline
         public double blue;
         public double yellow;
         public double green;
-        public double minblue;
+        public double darkBlue;
         public bool isReadyToDraw;
 
         public Palitra()
@@ -23,16 +23,16 @@ namespace Spline
         public void setColorValues(double min, double max)
         {
             red = max;
-            minblue = min;
+            darkBlue = min;
             blue = min + (max - min) / 4;
-            green = blue + (max - min) / 2;
+            green = min + (max - min) / 2;
             yellow = min + 3 * (max - min) / 4;
             isReadyToDraw = true;
         }
         public void ColorCalculate(double value, out byte r, out byte g, out byte b)
         {
             byte z;
-            if (value <= minblue)
+            if (value <= darkBlue)
             {
                 r = 0;
                 g = 0;
@@ -41,7 +41,7 @@ namespace Spline
             }
             else if (value <= blue)
             {
-                z = (byte)(MaxPixelColorValue * (Math.Abs(blue - minblue) - Math.Abs(value - minblue)) / Math.Abs(blue - minblue));
+                z = (byte)(MaxPixelColorValue * (Math.Abs(blue - darkBlue) - Math.Abs(value - darkBlue)) / Math.Abs(blue - darkBlue));
                 r = 0;
                 g = (byte)(MaxPixelColorValue - z);
                 b = MaxPixelColorValue;
