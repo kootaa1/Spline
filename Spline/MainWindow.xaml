@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.IsSharedSizeScope="True">
     <Grid MinWidth="1">
-        <WPF:OpenGLControl x:Name="OpenGlControl1" Grid.IsSharedSizeScope="True"  OpenGLInitialized="OpenGLControl_OpenGLInitialized" Resized="OpenGLControl_Resized" DrawFPS="True" MinWidth="400" Margin="0,0,119,0"/>
+        <WPF:OpenGLControl x:Name="OpenGLForm" Grid.IsSharedSizeScope="True"  OpenGLInitialized="OpenGLForm_OpenGLInitialized" Resized="OpenGLForm_Resized" DrawFPS="True" MinWidth="400" Margin="0,0,119,0" OpenGLDraw="OpenGLForm_Draw"/>
         <DockPanel Margin="0,2,0,2" HorizontalAlignment="Right" Width="110" LastChildFill="False">
             <StackPanel ScrollViewer.VerticalScrollBarVisibility="Disabled" MaxWidth="110" Grid.IsSharedSizeScope="True" HorizontalAlignment="Right" Margin="0,0,4,0">
                 <DockPanel Margin="0,0,0,0" Height="250">
@@ -19,7 +19,7 @@
                         <TextBlock x:Name="textBlock4" Margin="0,32,0,0" Height="25" TextWrapping="Wrap" Text="1488" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                         <TextBlock x:Name="textBlock5" Margin="0,32,0,0" Height="20" TextWrapping="Wrap" Text="1488" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                     </StackPanel>
-                    <WPF:OpenGLControl x:Name="OpenGLControl2" HorizontalAlignment="Left" Height="250" VerticalAlignment="Top" Width="51"/>
+                    <WPF:OpenGLControl x:Name="PalitraForm" HorizontalAlignment="Left" Height="250" VerticalAlignment="Top" Width="51" OpenGLDraw="PalitraDraw" OpenGLInitialized="PalitraInitalized"/>
                 </DockPanel>
                 <Button x:Name="openFileBtn" Margin="0,4,0,0" Content="Открыть" Click="OpenFileBtn_Click"/>
                 <DockPanel Margin="0,4,0,4" Height="20">

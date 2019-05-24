@@ -11,10 +11,11 @@ namespace Spline.sources
     {
         Matrix matrix;
         double[] f;
-        double[] result;
-        Grid grid;
+        public double[] result { get; set; }
+        public Grid grid { get; set; }
         Basis basis;
         LOS los;
+        bool isReady;
         
         public MyTask()
         {
@@ -23,7 +24,7 @@ namespace Spline.sources
             los = new LOS();
         }
 
-        public void Make(string filePath)
+        public bool Make(string filePath)
         {
             if (grid.inputSpline(filePath))
             {
@@ -33,7 +34,9 @@ namespace Spline.sources
                 MatrixFilling();
                 los = new LOS();
                 result = los.makeSLAU(matrix, f);
+                return true;
             }
+            return false;
         }
         void MatrixFilling()
         {

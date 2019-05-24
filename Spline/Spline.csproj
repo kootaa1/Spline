@@ -90,6 +90,7 @@
   <ItemGroup>
     <Compile Include="Matrix.cs" />
     <Compile Include="MyTask.cs" />
+    <Compile Include="Palitra.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
