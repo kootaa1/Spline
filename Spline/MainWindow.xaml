@@ -4,11 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Spline"
-        xmlns:WPF="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF" x:Class="Spline.MainWindow"
+        xmlns:WPF="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF" x:Name="myWindow" x:Class="Spline.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.IsSharedSizeScope="True">
+        Title="MainWindow" Height="450" Width="800" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.IsSharedSizeScope="True" KeyDown="MyKeyDown">
     <Grid MinWidth="1">
-        <WPF:OpenGLControl x:Name="OpenGLForm" Grid.IsSharedSizeScope="True"  OpenGLInitialized="OpenGLForm_OpenGLInitialized" Resized="OpenGLForm_Resized" DrawFPS="True" MinWidth="400" Margin="0,0,119,0" OpenGLDraw="OpenGLForm_Draw"/>
+        <WPF:OpenGLControl x:Name="OpenGLForm" Grid.IsSharedSizeScope="True" DrawFPS="False" MinWidth="400" Margin="0,0,119,0"
+                           OpenGLInitialized="OpenGLForm_Initialized" 
+                           Resized="OpenGLForm_Resized"
+                           OpenGLDraw="OpenGLForm_Draw"
+                           MouseUp="MouseUp"
+                           MouseDown="MouseDown"
+                           MouseMove="MouseMove"
+                           MouseWheel="MouseWheel"
+                           PreviewMouseWheel="MouseWheel"/>
         <DockPanel Margin="0,2,0,2" HorizontalAlignment="Right" Width="110" LastChildFill="False">
             <StackPanel ScrollViewer.VerticalScrollBarVisibility="Disabled" MaxWidth="110" Grid.IsSharedSizeScope="True" HorizontalAlignment="Right" Margin="0,0,4,0">
                 <DockPanel Margin="0,0,0,0" Height="250">

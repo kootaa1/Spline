@@ -31,32 +31,161 @@ namespace Spline
         Palitra palitra;
         double[] xPoints, yPoints;
         double[,] z;
-        double scaleX = 1, scaleY = 1, scaleZ = 1;
-        float rotateX = 0, rotateY = 0, rotateZ = 0;
-        double translateX = 0, translateY = 0, translateZ = 0;
+        double scaleX, scaleY, scaleZ;
+        float rotateX, rotateY, rotateZ;
+        double translateX, translateY, translateZ;
+        private bool isMiddleButton;
+        private bool isRightButton;
+        private double prevPositionX;
+        private double prevPositionY;
+
         public MainWindow()
         {
             InitializeComponent();
             palitra = new Palitra();
             task = new MyTask();
-            isReadyToDrawing = false;
+            rotateX = 0; rotateY = 0; rotateZ = 0;
+            translateX = 0; translateY = 0; translateZ = 0;
+            scaleX = 1; scaleY = 1; scaleZ = 1;
+
         }
 
+        private void MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Middle)// (e.Button == MouseButtons.Middle)
+            {
+                isMiddleButton = true;
+                prevPositionX = e.GetPosition(null).X;
+                prevPositionY = e.GetPosition(null).Y;
+            }
+            if (e.ChangedButton == MouseButton.Right)// == MouseButtons.Right)
+            {
+                isRightButton = true;
+                prevPositionX = e.GetPosition(null).X;
+                prevPositionY = e.GetPosition(null).Y;
+            }
+        }
+
+        private void MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isMiddleButton)
+            {
+                translateX += e.GetPosition(null).X - prevPositionX;
+                translateY += -(e.GetPosition(null).Y - prevPositionY);
+                //OpenGLForm.Open
+                prevPositionX = e.GetPosition(null).X;
+                prevPositionY = e.GetPosition(null).Y;
+            }
+            if (isRightButton)
+            {
+                rotateY += (float)(e.GetPosition(null).X - prevPositionX) / 5;
+                rotateX += (float)-(e.GetPosition(null).Y - prevPositionY) / 5;
+                //Refresh();
+                prevPositionX = e.GetPosition(null).X;
+                prevPositionY = e.GetPosition(null).Y;
+            }
+        }
+
+        private void MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Middle)
+            {
+                isMiddleButton = false;
+            }
+            else if (e.ChangedButton == MouseButton.Right)
+            {
+                isRightButton = false;
+            }
+        }
+
+        private void MyKeyDown(object sender, KeyEventArgs e)
+        {
+            float val = 5;
+            if (e.Key == Key.W)
+                rotateX += val;
+            if (e.Key == Key.S)
+                rotateX -= val;
+            if (e.Key == Key.A)
+                rotateY += val;
+            if (e.Key == Key.D)
+                rotateY -= val;
+            if (e.Key == Key.Q)
+                rotateZ += val;
+            if (e.Key == Key.E)
+                rotateZ -= val;
+            if (e.Key == Key.F1)
+                scaleZ -= val;
+            if (e.Key == Key.F2)
+                scaleZ += val;
+        }
+
+        private void MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                scaleX *= 1.05f;
+                scaleY *= 1.05f;
+                scaleZ *= 1.05f;
+            }
+            else
+            {
+                scaleX *= 0.95f;
+                scaleY *= 0.95f;
+                scaleZ *= 0.95f;
+            }
+        }
+
+        private void OpenGLForm_Initialized(object sender, OpenGLEventArgs args)
+        {
+            gl = OpenGLForm.OpenGL;
+            //gl.Ortho(0, OpenGLForm.ActualHeight, 0, OpenGLForm.ActualWidth, 0, 1000);
+            gl.ClearColor(0.8f, 0.8f, 0.8f, 0.8f);
+            Console.WriteLine("OpenGLForm_Initialized");
+        }
+
+        private void OpenGLForm_Resized(object sender, OpenGLEventArgs args)
+        {
+            gl = OpenGLForm.OpenGL;
+            //gl.Ortho(0, OpenGLForm.ActualHeight, 0, OpenGLForm.ActualWidth, 0, 1000);
+            gl.ClearColor(0.8f, 0.8f, 0.8f, 0.8f);
+            Console.WriteLine("OpenGLForm_Resized");
+        }
         private void OpenGLForm_Draw(object sender, OpenGLEventArgs args)
         {
+            Console.WriteLine("OpenGLForm_Draw");
             if (!isReadyToDrawing)
                 return;
             byte[] r = new byte[4], g = new byte[4], b = new byte[4];
+
+            //legend.Disable(OpenGL.GL_DEPTH_TEST);
+            //legend.MatrixMode(OpenGL.GL_PROJECTION);
+            //legend.LoadIdentity();
+            //legend.Ortho(0, PalitraForm.Width, 0, PalitraForm.Height, 1, 0);
+            //legend.MatrixMode(OpenGL.GL_MODELVIEW);
+            //legend.LoadIdentity();
+
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.MatrixMode(OpenGL.GL_PROJECTION); gl.LoadIdentity();
-            gl.Ortho(0, OpenGLForm.Height, 0, OpenGLForm.Width, -1000, 1000);
+            gl.Ortho(0, OpenGLForm.ActualHeight, 0, OpenGLForm.ActualWidth, -1000, 1000);
             gl.MatrixMode(OpenGL.GL_MODELVIEW); gl.LoadIdentity();
             gl.Enable(OpenGL.GL_DEPTH_TEST); gl.Enable(OpenGL.GL_COLOR_MATERIAL);
-            gl.ClearColor(0.8f, 0.8f, 0.8f, 0.8f);
             gl.Rotate(rotateX, rotateY, rotateZ);
             gl.Translate(translateX, translateY, translateZ);
             gl.Scale(scaleX, scaleY, scaleZ);
             gl.LineWidth(2);
+
+            gl.Begin(OpenGL.GL_LINES);
+            gl.Color((byte)255, (byte)0, (byte)0);
+            gl.Vertex(0, 0, 0);
+            gl.Vertex(int.MaxValue - 1, 0, 0);//X
+            gl.Color((byte)0, (byte)255, (byte)0);
+            gl.Vertex(0, 0, 0);
+            gl.Vertex(0, int.MaxValue - 1, 0);//Y
+            gl.Color((byte)0, (byte)0, (byte)255);
+            gl.Vertex(0, 0, 0);
+            gl.Vertex(0, 0, int.MaxValue - 1);//Z
+            gl.End();
+
             gl.ShadeModel(OpenGL.GL_SMOOTH);
             for (int j = 0; j < yPoints.Length - 1; j++)
             {
@@ -72,26 +201,31 @@ namespace Spline
                     //value[1] = task.valueInPoint(xPoints[i + 1], yPoints[j]);
                     palitra.ColorCalculate(z[i + 1, j], out r[1], out g[1], out b[1]);
                     gl.Color(r[1], g[1], b[1]);
-                    gl.Vertex(xPoints[i], yPoints[j], z[i + 1, j]);
+                    gl.Vertex(xPoints[i + 1], yPoints[j], z[i + 1, j]);
                     //value[2] = task.valueInPoint(xPoints[i], yPoints[j + 1]);
-                    palitra.ColorCalculate(z[i, j + 1], out r[2], out g[2], out b[2]);
+                    palitra.ColorCalculate(z[i + 1, j + 1], out r[2], out g[2], out b[2]);
                     gl.Color(r[2], g[2], b[2]);
-                    gl.Vertex(xPoints[i], yPoints[j], z[i, j + 1]);
+                    gl.Vertex(xPoints[i + 1], yPoints[j + 1], z[i + 1, j + 1]);
                     //value[3] = task.valueInPoint(xPoints[i + 1], yPoints[j + 1]);
-                    palitra.ColorCalculate(z[i + 1, j + 1], out r[3], out g[3], out b[3]);
+                    palitra.ColorCalculate(z[i, j + 1], out r[3], out g[3], out b[3]);
                     gl.Color(r[3], g[3], b[3]);
-                    gl.Vertex(xPoints[i], yPoints[j], z[i + 1, j + 1]);
+                    gl.Vertex(xPoints[i], yPoints[j + 1], z[i, j + 1]);
                     gl.End();
                     gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_LINE);
                     gl.Begin(OpenGL.GL_QUADS);
                     gl.Color((byte)255, (byte)255, (byte)255);
                     gl.Vertex(xPoints[i], yPoints[j], z[i, j]);
-                    gl.Vertex(xPoints[i], yPoints[j], z[i + 1, j]);
-                    gl.Vertex(xPoints[i], yPoints[j], z[i, j + 1]);
-                    gl.Vertex(xPoints[i], yPoints[j], z[i + 1, j + 1]);
+                    gl.Vertex(xPoints[i + 1], yPoints[j], z[i + 1, j]);
+                    gl.Vertex(xPoints[i + 1], yPoints[j + 1], z[i + 1, j + 1]);
+                    gl.Vertex(xPoints[i], yPoints[j + 1], z[i, j + 1]);
                     gl.End();
                 }
             }
+               gl.Flush();
+        }
+        private void PalitraInitalized(object sender, OpenGLEventArgs args)
+        {
+            legend = PalitraForm.OpenGL;
         }
 
         private void PalitraDraw(object sender, OpenGLEventArgs args)
@@ -140,26 +274,6 @@ namespace Spline
             legend.End();
         }
 
-        private void PalitraInitalized(object sender, OpenGLEventArgs args)
-        {
-            legend = PalitraForm.OpenGL;
-        }
-        private void OpenGLForm_OpenGLInitialized(object sender, OpenGLEventArgs args)
-        {
-            gl = OpenGLForm.OpenGL;
-
-        }
-
-        private void OpenGLForm_Resized(object sender, OpenGLEventArgs args)
-        {
-
-        }
-
-        private void OpenGLControl_Resized(object sender, OpenGLEventArgs args)
-        {
-
-        }
-
         private void OpenFileBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -177,14 +291,14 @@ namespace Spline
 
                     if (xPoints[xPoints.Length - 1] - xPoints[0] < yPoints[yPoints.Length - 1] - yPoints[0])
                     {
-                        if (OpenGLForm.Width < OpenGLForm.Height)
+                        if (OpenGLForm.ActualWidth < OpenGLForm.ActualHeight)
                         {
-                            scaleX = OpenGLForm.Width / (xPoints[xPoints.Length - 1] - xPoints[0]);
+                            scaleX = OpenGLForm.ActualWidth / (xPoints[xPoints.Length - 1] - xPoints[0]);
                             scaleY = scaleX;
                         }
                         else
                         {
-                            scaleX = OpenGLForm.Height / (xPoints[xPoints.Length - 1] - xPoints[0]);
+                            scaleX = OpenGLForm.ActualHeight / (xPoints[xPoints.Length - 1] - xPoints[0]);
                             scaleY = scaleX;
                         }
                     }
@@ -192,12 +306,12 @@ namespace Spline
                     {
                         if (OpenGLForm.Width < OpenGLForm.Height)
                         {
-                            scaleX = OpenGLForm.Width / (yPoints[yPoints.Length - 1] - yPoints[0]);
+                            scaleX = OpenGLForm.ActualWidth / (yPoints[yPoints.Length - 1] - yPoints[0]);
                             scaleY = scaleX;
                         }
                         else
                         {
-                            scaleX = OpenGLForm.Height / (yPoints[yPoints.Length - 1] - yPoints[0]);
+                            scaleX = OpenGLForm.ActualHeight / (yPoints[yPoints.Length - 1] - yPoints[0]);
                             scaleY = scaleX;
                         }
                     }
