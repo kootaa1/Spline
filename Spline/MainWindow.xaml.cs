@@ -38,6 +38,7 @@ namespace Spline
         private bool isRightButton;
         private double prevPositionX;
         private double prevPositionY;
+        private bool needInit;
 
         public MainWindow()
         {
@@ -45,9 +46,14 @@ namespace Spline
             palitra = new Palitra();
             task = new MyTask();
             rotateX = 0; rotateY = 0; rotateZ = 0;
-            translateX = 0; translateY = 0; translateZ = 0;
+            translateX = 0;
+            translateY = 0;
+            translateZ = 0;
             scaleX = 1; scaleY = 1; scaleZ = 1;
-
+            if (App.Parameters != null)
+            {
+                needInit = true;
+            }
         }
 
         private void MouseDown(object sender, MouseButtonEventArgs e)
@@ -149,6 +155,13 @@ namespace Spline
             //gl.Ortho(0, OpenGLForm.ActualHeight, 0, OpenGLForm.ActualWidth, 0, 1000);
             gl.ClearColor(0.8f, 0.8f, 0.8f, 0.8f);
             Console.WriteLine("OpenGLForm_Resized");
+            if (needInit)
+            {
+                loadAndPrepareData(App.Parameters[0]);
+                needInit = false;
+                translateY += OpenGLForm.ActualWidth / 2;
+                translateX += OpenGLForm.ActualHeight / 2;
+            }
         }
         private void OpenGLForm_Draw(object sender, OpenGLEventArgs args)
         {
@@ -166,11 +179,11 @@ namespace Spline
 
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.MatrixMode(OpenGL.GL_PROJECTION); gl.LoadIdentity();
-            gl.Ortho(0, OpenGLForm.ActualHeight, 0, OpenGLForm.ActualWidth, -1000, 1000);
+            gl.Ortho(0, OpenGLForm.ActualHeight, 0, OpenGLForm.ActualWidth, -10000, 10000);
             gl.MatrixMode(OpenGL.GL_MODELVIEW); gl.LoadIdentity();
             gl.Enable(OpenGL.GL_DEPTH_TEST); gl.Enable(OpenGL.GL_COLOR_MATERIAL);
-            gl.Rotate(rotateX, rotateY, rotateZ);
             gl.Translate(translateX, translateY, translateZ);
+            gl.Rotate(rotateX, rotateY, rotateZ);
             gl.Scale(scaleX, scaleY, scaleZ);
             gl.LineWidth(2);
 
@@ -221,7 +234,18 @@ namespace Spline
                     gl.End();
                 }
             }
-               gl.Flush();
+            if (DrawPoints.IsChecked.Value)
+            {
+                gl.PointSize(5);
+                gl.Begin(OpenGL.GL_POINTS);
+                gl.Color((byte)0, (byte)0, (byte)0);
+                for (int i = 0; i < task.grid.points.Count; i++)
+                {
+                    gl.Vertex(task.grid.points[i].x, task.grid.points[i].y, task.grid.f[i]);
+                }
+                gl.End();
+            }
+            gl.Flush();
         }
         private void PalitraInitalized(object sender, OpenGLEventArgs args)
         {
@@ -274,6 +298,43 @@ namespace Spline
             legend.End();
         }
 
+        void loadAndPrepareData(string filePath)
+        {
+            if (task.Make(filePath))
+            {
+                calculateGridArrays(30, 30);
+
+                if (xPoints[xPoints.Length - 1] - xPoints[0] < yPoints[yPoints.Length - 1] - yPoints[0])
+                {
+                    if (OpenGLForm.ActualWidth < OpenGLForm.ActualHeight)
+                    {
+                        scaleX = OpenGLForm.ActualWidth / (xPoints[xPoints.Length - 1] - xPoints[0]);
+                        scaleY = scaleX;
+                    }
+                    else
+                    {
+                        scaleX = OpenGLForm.ActualHeight / (xPoints[xPoints.Length - 1] - xPoints[0]);
+                        scaleY = scaleX;
+                    }
+                }
+                else
+                {
+                    if (OpenGLForm.Width < OpenGLForm.Height)
+                    {
+                        scaleX = OpenGLForm.ActualWidth / (yPoints[yPoints.Length - 1] - yPoints[0]);
+                        scaleY = scaleX;
+                    }
+                    else
+                    {
+                        scaleX = OpenGLForm.ActualHeight / (yPoints[yPoints.Length - 1] - yPoints[0]);
+                        scaleY = scaleX;
+                    }
+                }
+                translateX = xPoints[0];
+                translateY = xPoints[0];
+            }
+        }
+
         private void OpenFileBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -284,40 +345,7 @@ namespace Spline
             var result = openFileDialog.ShowDialog();
             if (result.Value)
             {
-                FilePath = openFileDialog.FileName;
-                if (task.Make(FilePath))
-                {
-                    calculateGridArrays(30, 30);
-
-                    if (xPoints[xPoints.Length - 1] - xPoints[0] < yPoints[yPoints.Length - 1] - yPoints[0])
-                    {
-                        if (OpenGLForm.ActualWidth < OpenGLForm.ActualHeight)
-                        {
-                            scaleX = OpenGLForm.ActualWidth / (xPoints[xPoints.Length - 1] - xPoints[0]);
-                            scaleY = scaleX;
-                        }
-                        else
-                        {
-                            scaleX = OpenGLForm.ActualHeight / (xPoints[xPoints.Length - 1] - xPoints[0]);
-                            scaleY = scaleX;
-                        }
-                    }
-                    else
-                    {
-                        if (OpenGLForm.Width < OpenGLForm.Height)
-                        {
-                            scaleX = OpenGLForm.ActualWidth / (yPoints[yPoints.Length - 1] - yPoints[0]);
-                            scaleY = scaleX;
-                        }
-                        else
-                        {
-                            scaleX = OpenGLForm.ActualHeight / (yPoints[yPoints.Length - 1] - yPoints[0]);
-                            scaleY = scaleX;
-                        }
-                    }
-                    translateX = xPoints[0];
-                    translateY = xPoints[0];
-                }
+                loadAndPrepareData(openFileDialog.FileName);
             }
         }
 

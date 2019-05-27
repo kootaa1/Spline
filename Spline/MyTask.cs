@@ -107,8 +107,8 @@ namespace Spline.sources
                                     hx, hy, grid.points[indexOfPoints[k]].x, grid.points[indexOfPoints[k]].y) *
                                     basis.Psi(jj, grid.x[i], grid.x[j], hx, hy,
                                         grid.points[indexOfPoints[k]].x, grid.points[indexOfPoints[k]].y)
-                                    + basis.secondComp(1, ii, jj, hx, hy)
-                                    + basis.thirdComp(1, ii, jj, hx, hy));
+                                    + basis.secondComp(0, ii, jj, hx, hy)
+                                    + basis.thirdComp(0, ii, jj, hx, hy));
                             }
                             f[indexInMatrix[ii]] += grid.omega[k] * basis.Psi(ii, grid.x[i], grid.y[j], hx, hy,
                                 grid.points[indexOfPoints[k]].x, grid.points[indexOfPoints[k]].y) * (grid.f[indexOfPoints[k]]);// + grid.error[k]);

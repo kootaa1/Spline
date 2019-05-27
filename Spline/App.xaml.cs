@@ -13,5 +13,15 @@ namespace Spline
     /// </summary>
     public partial class App : Application
     {
+        internal static List<string> Parameters = null;
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            Parameters = new List<string>();
+            foreach(var item in e.Args)
+            {
+                Parameters.Add(item);
+            }
+            base.OnStartup(e);
+        }
     }
 }
