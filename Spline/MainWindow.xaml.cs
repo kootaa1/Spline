@@ -39,6 +39,9 @@ namespace Spline
         private double prevPositionX;
         private double prevPositionY;
         private bool needInit;
+        private double xPointforCalculating;
+        private double yPointforCalculating;
+        private bool drowFunctionValue;
 
         public MainWindow()
         {
@@ -148,6 +151,18 @@ namespace Spline
             gl.ClearColor(0.8f, 0.8f, 0.8f, 0.8f);
             Console.WriteLine("OpenGLForm_Initialized");
         }
+        public int DS_Count(string s)
+        {
+            string substr = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0].ToString();
+            int count = (s.Length - s.Replace(substr, "").Length) / substr.Length;
+            return count;
+        }
+        private void PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !((Char.IsDigit(e.Text, 0) ||
+                ((e.Text == System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0].ToString())
+                && (DS_Count(((TextBox)sender).Text)< 1))));
+        }
 
         private void OpenGLForm_Resized(object sender, OpenGLEventArgs args)
         {
@@ -234,9 +249,20 @@ namespace Spline
                     gl.End();
                 }
             }
+
+            if(drowFunctionValue)
+            {
+                gl.PointSize(8);
+                gl.Begin(OpenGL.GL_POINTS);
+                gl.Color((byte)255, (byte)255, (byte)255);
+                gl.Vertex(xPointforCalculating, yPointforCalculating,
+                    task.valueInPoint(xPointforCalculating, yPointforCalculating));
+                gl.End();
+            }
+
             if (DrawPoints.IsChecked.Value)
             {
-                gl.PointSize(5);
+                gl.PointSize(8);
                 gl.Begin(OpenGL.GL_POINTS);
                 gl.Color((byte)0, (byte)0, (byte)0);
                 for (int i = 0; i < task.grid.points.Count; i++)
@@ -334,7 +360,13 @@ namespace Spline
                 translateY = xPoints[0];
             }
         }
-
+        private void CalculateFunctionBtn_Click(object sender, RoutedEventArgs e)
+        {
+            double.TryParse(textBoxX.Text, out xPointforCalculating);
+            double.TryParse(textBoxX.Text, out yPointforCalculating);
+            drowFunctionValue = true;
+            resultTextBlock.Text = String.Format("{0:0.###}", task.valueInPoint(xPointforCalculating,yPointforCalculating));
+        }
         private void OpenFileBtn_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
