@@ -1,4 +1,4 @@
-﻿<Window
+﻿<Window xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,9 +6,25 @@
         xmlns:local="clr-namespace:Spline"
         xmlns:WPF="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF" x:Name="myWindow" x:Class="Spline.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.IsSharedSizeScope="True" KeyDown="MyKeyDown">
+        Title="Spline maker" Height="597" Width="792" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.IsSharedSizeScope="True" KeyDown="MyKeyDown">
     <Grid MinWidth="1">
-        <WPF:OpenGLControl x:Name="OpenGLForm" Grid.IsSharedSizeScope="True" DrawFPS="False" MinWidth="400" Margin="0,0,119,0"
+        <Menu x:Name="menu" HorizontalAlignment="Left" Height="20" Margin="0,0,119,0" VerticalAlignment="Top">
+            <MenuItem Header="Файл" >
+                <MenuItem x:Name="Open" Header="Открыть" Click="OpenFileWasClicked"/>
+                <MenuItem x:Name="Save" Header="Сохранить"/>
+                <Separator/>
+                <MenuItem x:Name="Exit" Header="Выход"/>
+            </MenuItem>
+            <MenuItem Header="Вид" >
+                <MenuItem x:Name="Relief" Header="Рельеф" IsCheckable="true"/>
+                <Separator/>
+                <MenuItem x:Name="Grid" Header="Сетка" IsCheckable="true" IsChecked="True"/>
+                <MenuItem x:Name="Axis" Header="Оси" IsCheckable="true" IsChecked="True"/>
+                <MenuItem x:Name="Info" Header="Инфо" IsCheckable="true"/>
+                <MenuItem x:Name="SplinePoints" Header="Точки сплайна" IsCheckable="True" IsChecked="False"/>
+            </MenuItem>
+        </Menu>
+        <WPF:OpenGLControl x:Name="OpenGLForm" Grid.IsSharedSizeScope="True" DrawFPS="False" MinWidth="400" Margin="0,20,119,0"
                            OpenGLInitialized="OpenGLForm_Initialized" 
                            Resized="OpenGLForm_Resized"
                            OpenGLDraw="OpenGLForm_Draw"
@@ -17,30 +33,66 @@
                            MouseMove="MouseMove"
                            MouseWheel="MouseWheel"
                            PreviewMouseWheel="MouseWheel"/>
-        <DockPanel Margin="0,2,0,2" HorizontalAlignment="Right" Width="110" LastChildFill="False">
+        <DockPanel Margin="0,0,0,2" HorizontalAlignment="Right" Width="110" LastChildFill="False">
             <StackPanel ScrollViewer.VerticalScrollBarVisibility="Disabled" MaxWidth="110" Grid.IsSharedSizeScope="True" HorizontalAlignment="Right" Margin="0,0,4,0">
                 <DockPanel Margin="0,0,0,0" Height="250">
                     <StackPanel Height="250" VerticalAlignment="Top" Width="53" Panel.ZIndex="7">
-                        <TextBlock x:Name="textBlock1" Margin="0,0,0,0" Height="25" TextWrapping="Wrap" Text="1488" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="textBlock2" Margin="0,32,0,0" Height="25" TextWrapping="Wrap" Text="1488" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="textBlock3" Margin="0,32,0,0" Height="25" TextWrapping="Wrap" Text="1488" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="textBlock4" Margin="0,32,0,0" Height="25" TextWrapping="Wrap" Text="1488" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="textBlock5" Margin="0,32,0,0" Height="20" TextWrapping="Wrap" Text="1488" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="textBlock1" Margin="0,0,0,0" Height="25" TextWrapping="Wrap" Text="none" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="textBlock2" Margin="0,32,0,0" Height="25" TextWrapping="Wrap" Text="none" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="textBlock3" Margin="0,32,0,0" Height="25" TextWrapping="Wrap" Text="none" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="textBlock4" Margin="0,32,0,0" Height="25" TextWrapping="Wrap" Text="none" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <TextBlock x:Name="textBlock5" Margin="0,32,0,0" Height="20" TextWrapping="Wrap" Text="none" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                     </StackPanel>
-                    <WPF:OpenGLControl x:Name="PalitraForm" HorizontalAlignment="Left" Height="250" VerticalAlignment="Top" Width="51" OpenGLDraw="PalitraDraw" OpenGLInitialized="PalitraInitalized"/>
-                </DockPanel>
-                <Button x:Name="openFileBtn" Margin="0,4,0,0" Content="Открыть" Click="OpenFileBtn_Click"/>
-                <DockPanel Margin="0,4,0,4" Height="20">
-                    <TextBlock x:Name="textBlockX" Height="25" TextWrapping="Wrap" Text="X:" VerticalAlignment="Top" Width="12" Margin="0,0,0,0"/>
-                    <TextBox x:Name="textBoxX" TextWrapping="Wrap" Text="" Width="90" PreviewTextInput="PreviewTextInput"/>
-                </DockPanel>
-                <DockPanel Margin="0,4,0,4" Height="20">
-                    <TextBlock x:Name="textBlockY" Height="25" TextWrapping="Wrap" Text="Y:" VerticalAlignment="Top" Width="12" Margin="0,0,0,0"/>
-                    <TextBox x:Name="textBoxY"  TextWrapping="Wrap" Text="" Width="90" PreviewTextInput="PreviewTextInput"/>
-                </DockPanel>
-                <Button x:Name="calculateFunctionBtn" Margin="0,4,0,4" Content="F(x,y)=" Click="CalculateFunctionBtn_Click"/>
-                <TextBlock x:Name="resultTextBlock" Height="23" Margin="0,0,0,4" TextWrapping="Wrap" Text="Результат"/>
+                    <WPF:OpenGLControl x:Name="PalitraForm" HorizontalAlignment="Left" Height="250" VerticalAlignment="Top" Width="51"
+                                       OpenGLDraw="PalitraDraw"
+                                       OpenGLInitialized="PalitraInitalized"/>
+                </DockPanel>               
+                <GroupBox x:Name="groupBox" Header="Вычислить" Height="100" Width="100">
+                    <StackPanel>
+                        <DockPanel Height="20">
+                            <TextBlock Height="25" TextWrapping="Wrap" Text="X:" VerticalAlignment="Top" Width="12" Margin="0,0,0,0"/>
+                            <TextBox x:Name="textBoxX" TextWrapping="Wrap" Text=""  Width="Auto" />
+                        </DockPanel>
+                        <DockPanel Height="20">
+                            <TextBlock Height="25" TextWrapping="Wrap" Text="Y:" VerticalAlignment="Top" Width="12" Margin="0,0,0,0"/>
+                            <TextBox x:Name="textBoxY"  TextWrapping="Wrap" Text=""  Width="Auto" />
+                        </DockPanel>
+                        <Button x:Name="calculateFunctionBtn" Content="F(x,y)=" Click="CalculateFunctionBtn_Click"/>
+                        <TextBlock x:Name="resultTextBlock" Height="23" TextWrapping="Wrap" Text="Результат"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox x:Name="groupBox2" Header="Разбиения" Height="100" Width="100">
+                    <StackPanel>
+                        <DockPanel Height="20">
+                            <TextBlock Height="25" TextWrapping="Wrap" Text="по X:" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                            <TextBox x:Name="XSplitting" TextWrapping="Wrap" Text=""  Width="Auto" />
+                        </DockPanel>
+                        <DockPanel Height="20">
+                            <TextBlock Height="25" TextWrapping="Wrap" Text="по Y:" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                            <TextBox x:Name="YSplitting" TextWrapping="Wrap" Text=""  Width="Auto" />
+                        </DockPanel>
+                        <Button x:Name="Resplit" Content="Рассчитать" Click="Resplit_Click"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox x:Name="groupBox1" Header="Поворот" Height="100" Width="100">
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,0">
+                        <DockPanel Height="20">
+                            <TextBlock Height="25" TextWrapping="Wrap" Text="X:" VerticalAlignment="Top" Width="12" Margin="0,0,0,0"/>
+                            <xctk:DoubleUpDown x:Name="XRotate" Width="Auto" Maximum="730" Minimum="-365" ValueChanged="XRotate_ValueChanged"/>
+                        </DockPanel>
+                        <DockPanel Height="20">
+                            <TextBlock Height="25" TextWrapping="Wrap" Text="Y:" VerticalAlignment="Top" Width="12" Margin="0,0,0,0"/>
+                            <xctk:DoubleUpDown x:Name="YRotate" Width="Auto" Maximum="730" Minimum="-365" ValueChanged="YRotate_ValueChanged"/>
+                        </DockPanel>
+                        <DockPanel Height="20">
+                            <TextBlock Height="25" TextWrapping="Wrap" Text="Z:" VerticalAlignment="Top" Width="12" Margin="0,0,0,0"/>
+                            <xctk:DoubleUpDown x:Name="ZRotate" Width="Auto" Maximum="730" Minimum="-365"
+                                                      ValueChanged="ZRotate_ValueChanged" DisplayDefaultValueOnEmptyText="True"/>
+                        </DockPanel>
+                    </StackPanel>
+                </GroupBox>
                 <CheckBox x:Name="DrawPoints" Content="Точки"/>
+                <CheckBox x:Name="DrawRelief" Content="Точки"/>
             </StackPanel>
         </DockPanel>
     </Grid>
