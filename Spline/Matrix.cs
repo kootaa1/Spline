@@ -11,6 +11,7 @@ namespace Spline.sources
     {
         public List<double> di, al, au, f;
         public List<int> ia, ja;
+        public ListOfAdjacency listOfAdjacency;
 
         public Matrix(int n)
         {
@@ -66,8 +67,11 @@ namespace Spline.sources
         {
             int n = 4 * grid.getXSize() * grid.getYSize();
             int k = 0;
-            ListOfAdjacency listOfAdjacency = new ListOfAdjacency();
-            listOfAdjacency.fillingList(grid);
+            if (listOfAdjacency == null)
+            {
+                listOfAdjacency = new ListOfAdjacency();
+                listOfAdjacency.fillingList(grid);
+            }
             ia.Add(0);
             for (int i = 0; i < n; i++)
             {
@@ -113,6 +117,23 @@ namespace Spline.sources
                 return 0;
             }
         }
-        //void nullMatrix();
+        public void nullMatrix()
+        {
+            for (int i = 0; i < di.Count; i++)
+                di[i] = 0;
+            for (int i = 0; i < al.Count; i++)
+            {
+                al[i] = 0;
+                au[i] = 0;
+            }
+            for (int i = 0; i < ia.Count; i++)
+                ia[i] = 0;
+            for (int i = 0; i < ja.Count; i++)
+            {
+                ja[i] = 0;
+            }
+            for (int i = 0; i < f.Count; i++)
+                f[i] = 0;
+        }
     }
 }

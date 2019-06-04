@@ -6,14 +6,15 @@
         xmlns:local="clr-namespace:Spline"
         xmlns:WPF="clr-namespace:SharpGL.WPF;assembly=SharpGL.WPF" x:Name="myWindow" x:Class="Spline.MainWindow"
         mc:Ignorable="d"
-        Title="Spline maker" Height="597" Width="792" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.IsSharedSizeScope="True" KeyDown="MyKeyDown">
+        Title="Spline maker" Height="622" Width="792" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.IsSharedSizeScope="True" 
+        KeyDown="MyKeyDown">
     <Grid MinWidth="1">
         <Menu x:Name="menu" HorizontalAlignment="Left" Height="20" Margin="0,0,119,0" VerticalAlignment="Top">
             <MenuItem Header="Файл" >
                 <MenuItem x:Name="Open" Header="Открыть" Click="OpenFileWasClicked"/>
-                <MenuItem x:Name="Save" Header="Сохранить"/>
+                <MenuItem x:Name="Save" Header="Сохранить" Click="SaveFileWasClicked"/>
                 <Separator/>
-                <MenuItem x:Name="Exit" Header="Выход"/>
+                <MenuItem x:Name="Exit" Header="Выход" Click="ExitWasClicked"/>
             </MenuItem>
             <MenuItem Header="Вид" >
                 <MenuItem x:Name="Relief" Header="Рельеф" IsCheckable="true"/>
@@ -47,21 +48,24 @@
                                        OpenGLDraw="PalitraDraw"
                                        OpenGLInitialized="PalitraInitalized"/>
                 </DockPanel>               
-                <GroupBox x:Name="groupBox" Header="Вычислить" Height="100" Width="100">
+                <GroupBox x:Name="groupBox" Header="Вычислить">
                     <StackPanel>
                         <DockPanel Height="20">
                             <TextBlock Height="25" TextWrapping="Wrap" Text="X:" VerticalAlignment="Top" Width="12" Margin="0,0,0,0"/>
-                            <TextBox x:Name="textBoxX" TextWrapping="Wrap" Text=""  Width="Auto" />
+                            <TextBox x:Name="textBoxX" TextWrapping="Wrap" Text="" Width="Auto" AcceptsReturn="True"
+                                     TextChanged="FCalculateTextChanged"
+                                     PreviewMouseDown="onXTextBoxMouseDown"/>
                         </DockPanel>
                         <DockPanel Height="20">
                             <TextBlock Height="25" TextWrapping="Wrap" Text="Y:" VerticalAlignment="Top" Width="12" Margin="0,0,0,0"/>
-                            <TextBox x:Name="textBoxY"  TextWrapping="Wrap" Text=""  Width="Auto" />
+                            <TextBox x:Name="textBoxY"  TextWrapping="Wrap" Text=""  Width="Auto" AcceptsReturn="True"
+                                     TextChanged="FCalculateTextChanged"
+                                     PreviewMouseDown="onYTextBoxMouseDown"/>
                         </DockPanel>
-                        <Button x:Name="calculateFunctionBtn" Content="F(x,y)=" Click="CalculateFunctionBtn_Click"/>
                         <TextBlock x:Name="resultTextBlock" Height="23" TextWrapping="Wrap" Text="Результат"/>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox x:Name="groupBox2" Header="Разбиения" Height="100" Width="100">
+                <GroupBox x:Name="groupBox2" Header="Разбиения">
                     <StackPanel>
                         <DockPanel Height="20">
                             <TextBlock Height="25" TextWrapping="Wrap" Text="по X:" VerticalAlignment="Top" Margin="0,0,0,0"/>
@@ -74,7 +78,7 @@
                         <Button x:Name="Resplit" Content="Рассчитать" Click="Resplit_Click"/>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox x:Name="groupBox1" Header="Поворот" Height="100" Width="100">
+                <GroupBox x:Name="groupBox1" Header="Поворот">
                     <StackPanel Orientation="Vertical" Margin="0,0,0,0">
                         <DockPanel Height="20">
                             <TextBlock Height="25" TextWrapping="Wrap" Text="X:" VerticalAlignment="Top" Width="12" Margin="0,0,0,0"/>
@@ -91,8 +95,19 @@
                         </DockPanel>
                     </StackPanel>
                 </GroupBox>
-                <CheckBox x:Name="DrawPoints" Content="Точки"/>
-                <CheckBox x:Name="DrawRelief" Content="Точки"/>
+                <GroupBox x:Name="reg" Header="Регуляризация">
+                    <StackPanel>
+                        <DockPanel Height="20">
+                            <TextBlock Height="25" TextWrapping="Wrap" Text="alpha" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                            <TextBox x:Name="alphaComponent" TextWrapping="Wrap" Text="0"  Width="Auto" />
+                        </DockPanel>
+                        <DockPanel Height="20">
+                            <TextBlock Height="25" TextWrapping="Wrap" Text="beta" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                            <TextBox x:Name="betaComponent" TextWrapping="Wrap" Text="0"  Width="Auto" />
+                        </DockPanel>
+                        <Button x:Name="RegularizationBtn" Content="Рассчитать" Click="RegularizationBtn_Click"/>
+                    </StackPanel>
+                </GroupBox>
             </StackPanel>
         </DockPanel>
     </Grid>

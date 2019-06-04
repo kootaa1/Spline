@@ -4,6 +4,7 @@ using SharpGL.SceneGraph;
 using Spline.sources;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,6 +46,7 @@ namespace Spline
         private const int MIN_ANGLE = 0;
         double minZValue, maxZValue;
         private int xSplit, ySplit;
+        double alpha, beta;
         //private bool isRotate;
 
         public MainWindow()
@@ -62,6 +64,9 @@ namespace Spline
             {
                 needInit = true;
             }
+            alpha = 0; beta = 0;
+            alphaComponent.Text = alpha.ToString();
+            betaComponent.Text = beta.ToString();
         }
 
         private void MouseDown(object sender, MouseButtonEventArgs e)
@@ -79,7 +84,6 @@ namespace Spline
                 prevPositionY = e.GetPosition(null).Y;
             }
         }
-
         private void MouseMove(object sender, MouseEventArgs e)
         {
             if (isMiddleButton)
@@ -100,7 +104,6 @@ namespace Spline
                 //isRotate = true;
             }
         }
-
         private void MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Middle)
@@ -112,50 +115,6 @@ namespace Spline
                 isRightButton = false;
             }
         }
-
-        private void MyKeyDown(object sender, KeyEventArgs e)
-        {
-            float val = 5;
-            if (e.Key == Key.W)
-            {
-                //isRotate = true;
-                //rotateX += val;
-                XRotate.Value += val;
-            }
-            if (e.Key == Key.S)
-            {
-                //isRotate = true;
-                //rotateX -= val;
-                XRotate.Value -= val;
-            }
-            if (e.Key == Key.A)
-            {
-                //isRotate = true;
-                //rotateY += val;
-                YRotate.Value += val;
-            }
-            if (e.Key == Key.D)
-            {
-                //isRotate = true;
-                //rotateY -= val;
-                YRotate.Value -= val;
-            }
-            if (e.Key == Key.Q)
-            {
-                //isRotate = true;
-                ZRotate.Value += val;
-            }
-            if (e.Key == Key.E)
-            {
-                //isRotate = true;
-                ZRotate.Value -= val;
-            }
-            if (e.Key == Key.F1)
-                scaleZ -= val;
-            if (e.Key == Key.F2)
-                scaleZ += val;
-        }
-
         private void MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 0)
@@ -171,6 +130,38 @@ namespace Spline
                 scaleZ *= 0.95f;
             }
         }
+        private void MyKeyDown(object sender, KeyEventArgs e)
+        {
+            float val = 5;
+            if (e.Key == Key.W)
+            {
+                XRotate.Value += val;
+            }
+            if (e.Key == Key.S)
+            {
+                XRotate.Value -= val;
+            }
+            if (e.Key == Key.A)
+            {
+                YRotate.Value += val;
+            }
+            if (e.Key == Key.D)
+            {
+                YRotate.Value -= val;
+            }
+            if (e.Key == Key.Q)
+            {
+                ZRotate.Value += val;
+            }
+            if (e.Key == Key.E)
+            {
+                ZRotate.Value -= val;
+            }
+            if (e.Key == Key.F1)
+                scaleZ -= val;
+            if (e.Key == Key.F2)
+                scaleZ += val;
+        }
 
         private void OpenGLForm_Initialized(object sender, OpenGLEventArgs args)
         {
@@ -178,7 +169,6 @@ namespace Spline
             //gl.Ortho(0, OpenGLForm.ActualHeight, 0, OpenGLForm.ActualWidth, 0, 1000);
             gl.ClearColor(0.8f, 0.8f, 0.8f, 0.8f);
         }
-
         private void OpenGLForm_Resized(object sender, OpenGLEventArgs args)
         {
             gl = OpenGLForm.OpenGL;
@@ -192,29 +182,6 @@ namespace Spline
                 translateX += OpenGLForm.ActualHeight / 2;
             }
         }
-
-        private void XRotate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (XRotate.Value > MAX_ANGLE)
-                XRotate.Value -= MAX_ANGLE;
-            if (XRotate.Value < MIN_ANGLE)
-                XRotate.Value += MAX_ANGLE;
-        }
-        private void YRotate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (YRotate.Value > MAX_ANGLE)
-                YRotate.Value -= MAX_ANGLE;
-            if (YRotate.Value < MIN_ANGLE)
-                YRotate.Value += MAX_ANGLE;
-        }
-        private void ZRotate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (ZRotate.Value > MAX_ANGLE)
-                ZRotate.Value -= MAX_ANGLE;
-            if (ZRotate.Value < MIN_ANGLE)
-                ZRotate.Value += MAX_ANGLE;
-        }
-
         private void OpenGLForm_Draw(object sender, OpenGLEventArgs args)
         {
             if (!isReadyToDrawing)
@@ -345,50 +312,10 @@ namespace Spline
             }
             gl.Flush();
         }
-
-        private void Resplit_Click(object sender, RoutedEventArgs e)
-        {
-            int prevXSplit = xSplit, prevYSplit = ySplit;
-            if (!int.TryParse(XSplitting.Text, out xSplit) || !int.TryParse(YSplitting.Text, out ySplit))
-            {
-                MessageBox.Show("Вы ввели неверные значения в поля координат, исправьте и повторите.");
-                return;
-            }
-            if (xSplit > 0 && ySplit > 0)
-                calculateGridArrays(xSplit, ySplit);
-            else
-            {
-                MessageBox.Show("Отрицательные значения для разбиения сетки недопустимы.");
-                xSplit = prevXSplit;
-                ySplit = prevYSplit;
-                XSplitting.Text = xSplit.ToString();
-                YSplitting.Text = ySplit.ToString();
-                return;
-            }
-            calculateGridArrays(xSplit, ySplit);
-        }
-
-        private void OpenFileWasClicked(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Title = "Open Data File";
-            //openFileDialog.DefaultExt = ".txt";
-            openFileDialog.Filter = "Text documents (.txt)|*.txt";
-            openFileDialog.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            var result = openFileDialog.ShowDialog();
-            if (result.Value)
-            {
-                isReadyToDrawing = false;
-                loadAndPrepareData(openFileDialog.FileName);
-                isReadyToDrawing = true;
-            }
-        }
-
         private void PalitraInitalized(object sender, OpenGLEventArgs args)
         {
             legend = PalitraForm.OpenGL;
         }
-
         private void PalitraDraw(object sender, OpenGLEventArgs args)
         {
             if (!palitra.isReadyToDraw)
@@ -435,6 +362,179 @@ namespace Spline
             legend.End();
         }
 
+        private void XRotate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (XRotate.Value > MAX_ANGLE)
+                XRotate.Value -= MAX_ANGLE;
+            if (XRotate.Value < MIN_ANGLE)
+                XRotate.Value += MAX_ANGLE;
+        }
+        private void YRotate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (YRotate.Value > MAX_ANGLE)
+                YRotate.Value -= MAX_ANGLE;
+            if (YRotate.Value < MIN_ANGLE)
+                YRotate.Value += MAX_ANGLE;
+        }
+        private void ZRotate_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            if (ZRotate.Value > MAX_ANGLE)
+                ZRotate.Value -= MAX_ANGLE;
+            if (ZRotate.Value < MIN_ANGLE)
+                ZRotate.Value += MAX_ANGLE;
+        }
+
+        private void Resplit_Click(object sender, RoutedEventArgs e)
+        {
+            int prevXSplit = xSplit, prevYSplit = ySplit;
+            if (!int.TryParse(XSplitting.Text, out xSplit) || !int.TryParse(YSplitting.Text, out ySplit))
+            {
+                MessageBox.Show("Вы ввели неверные значения в поля координат, исправьте и повторите.");
+                return;
+            }
+            if (xSplit > 0 && ySplit > 0)
+                calculateGridArrays(xSplit, ySplit);
+            else
+            {
+                MessageBox.Show("Отрицательные значения для разбиения сетки недопустимы.");
+                xSplit = prevXSplit;
+                ySplit = prevYSplit;
+                XSplitting.Text = xSplit.ToString();
+                YSplitting.Text = ySplit.ToString();
+                return;
+            }
+            calculateGridArrays(xSplit, ySplit);
+        }
+        private void ExitWasClicked(object sender, RoutedEventArgs e)
+        {
+            App.Current.Shutdown();
+        }
+
+        private void RegularizationBtn_Click(object sender, RoutedEventArgs e)
+        {
+            double a, b;
+            if (!double.TryParse(alphaComponent.Text, out a))
+            {
+                MessageBox.Show("Вы ввели неверные значения alpha компоненты!");
+                alphaComponent.Text = alpha.ToString();
+                return;
+            }
+            alpha = Math.Abs(a);
+            alphaComponent.Text = alpha.ToString();
+            if (!double.TryParse(betaComponent.Text, out b))
+            {
+                MessageBox.Show("Вы ввели неверные значения beta компоненты!");
+                betaComponent.Text = beta.ToString();
+                return;
+            }
+            beta = Math.Abs(b);
+            betaComponent.Text = beta.ToString();
+            task.calculateWithNewComponent(alpha, beta);
+            calculateGridArrays(xSplit, ySplit);
+        }
+
+        private void OpenFileWasClicked(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "Open Data File",
+                Filter = "Text documents (.txt)|*.txt",
+                InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
+            };
+            var result = openFileDialog.ShowDialog();
+            if (result.Value)
+            {
+                isReadyToDrawing = false;
+                loadAndPrepareData(openFileDialog.FileName);
+                isReadyToDrawing = true;
+            }
+        }
+        private void SaveFileWasClicked(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Title = "Open Data File",
+                Filter = "Text documents (.txt)|*.txt",
+                InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                SaveIntoFile(saveFileDialog.FileName);
+            }
+        }
+        public void SaveIntoFile(string path)
+        {
+            StreamWriter sr = new StreamWriter(path);
+            foreach (var item in xPoints)
+                sr.Write(item.ToString() + " ");
+            sr.Write("\n");
+            foreach (var item in yPoints)
+                sr.Write(item.ToString() + " ");
+            sr.Write("\n");
+            for (int i = 0; i < xPoints.Length; i++)
+            {
+                for (int j = 0; j < yPoints.Length; j++)
+                {
+                    sr.Write(z[i, j].ToString() + " ");
+                }
+            }
+        }
+
+        private void FCalculateTextChanged(object sender, TextChangedEventArgs e)
+        {
+            double num;
+            bool isFocused = false;
+            String msg = null;
+            if (textBoxX.Text.Contains("\n"))
+            {
+                textBoxX.IsReadOnly = true;
+                textBoxX.Text = textBoxX.Text.Replace("\r\n", String.Empty);
+            }
+            if(textBoxY.Text.Contains("\n"))
+            {
+                textBoxY.IsReadOnly = true;
+                textBoxY.Text = textBoxY.Text.Replace("\r\n", String.Empty);
+            }
+            if (double.TryParse(textBoxX.Text, out num) && xPoints != null)
+                if (num >= xPoints[0] && num <= xPoints[xPoints.Length - 1])
+                {
+                    xPointforCalculating = num;
+                    textBoxX.Text = num.ToString();
+                }
+                else
+                {
+                    msg = "\n Значение компоненты Х находится за пределами рассчетной области. \n\n" +
+                        "рассчетная область Х:[" + String.Format("{0:0.###}", xPoints[0]) + ","
+                        + String.Format("{0:0.###}", xPoints[xPoints.Length - 1]) + "]";
+                }
+            else
+            {
+                resultTextBlock.Text = "Результат";
+            }
+            if (double.TryParse(textBoxY.Text, out num) && yPoints != null)
+                if (num >= yPoints[0] && num <= yPoints[yPoints.Length - 1])
+                {
+                    yPointforCalculating = num;
+                    textBoxY.Text = num.ToString();
+                }
+                else
+                {
+                    msg += "\n Значение компоненты Y находится за пределами рассчетной области. \n\n" +
+                          "рассчетная область Y:[" + String.Format("{0:0.###}", yPoints[0]) + ","
+                          + String.Format("{0:0.###}", yPoints[yPoints.Length - 1]) + "]";
+                }
+            else
+            {
+                resultTextBlock.Text = "Результат";
+                return;
+            }
+            if (msg != null)
+                MessageBox.Show(msg);
+            drowFunctionValue = true;
+            resultTextBlock.Text = String.Format("{0:0.###}", task.valueInPoint(xPointforCalculating, yPointforCalculating));
+        }
+        private void onYTextBoxMouseDown(object sender, MouseButtonEventArgs e) { textBoxY.IsReadOnly = false; }
+        private void onXTextBoxMouseDown(object sender, MouseButtonEventArgs e) { textBoxX.IsReadOnly = false; }
         void loadAndPrepareData(string filePath)
         {
             if (task.Make(filePath))
@@ -471,27 +571,28 @@ namespace Spline
                 translateY = yPoints[0];
             }
         }
-        private void CalculateFunctionBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (!double.TryParse(textBoxX.Text, out xPointforCalculating) ||
-            !double.TryParse(textBoxX.Text, out yPointforCalculating))
-            {
-                MessageBox.Show("Вы ввели неверные значения в поля координат, исправьте и повторите.");
-                drowFunctionValue = false;
-                resultTextBlock.Text = "Результат";
-                return;
-            }
-            if (xPointforCalculating < xPoints[0] || xPointforCalculating > xPoints[xPoints.Length - 1] ||
-                yPointforCalculating < yPoints[0] || yPointforCalculating > yPoints[yPoints.Length - 1])
-            {
-                MessageBox.Show("Введенные координаты находятся за пределами рассчетной области.");
-                drowFunctionValue = false;
-                resultTextBlock.Text = "Результат";
-                return;
-            }
-            drowFunctionValue = true;
-            resultTextBlock.Text = String.Format("{0:0.###}", task.valueInPoint(xPointforCalculating, yPointforCalculating));
-        }
+
+        //private void CalculateFunctionBtn_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (!double.TryParse(textBoxX.Text, out xPointforCalculating) ||
+        //    !double.TryParse(textBoxX.Text, out yPointforCalculating))
+        //    {
+        //        MessageBox.Show("Вы ввели неверные значения в поля координат, исправьте и повторите.");
+        //        drowFunctionValue = false;
+        //        resultTextBlock.Text = "Результат";
+        //        return;
+        //    }
+        //    if (xPointforCalculating < xPoints[0] || xPointforCalculating > xPoints[xPoints.Length - 1] ||
+        //        yPointforCalculating < yPoints[0] || yPointforCalculating > yPoints[yPoints.Length - 1])
+        //    {
+        //        MessageBox.Show("Введенные координаты находятся за пределами рассчетной области.");
+        //        drowFunctionValue = false;
+        //        resultTextBlock.Text = "Результат";
+        //        return;
+        //    }
+        //    drowFunctionValue = true;
+        //    resultTextBlock.Text = String.Format("{0:0.###}", task.valueInPoint(xPointforCalculating, yPointforCalculating));
+        //}
 
         public void calculateGridArrays(int countOfXPoints, int countOfYPoints)
         {

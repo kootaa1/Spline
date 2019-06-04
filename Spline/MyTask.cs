@@ -16,7 +16,7 @@ namespace Spline.sources
         Basis basis;
         LOS los;
         bool isReady;
-        
+        double alphaComponent, betaComponent;
         public MyTask()
         {
             grid = new Grid();
@@ -37,6 +37,19 @@ namespace Spline.sources
                 return true;
             }
             return false;
+        }
+
+        public bool calculateWithNewComponent(double alpha, double beta)
+        {
+            alphaComponent = alpha;
+            betaComponent = beta;
+            matrix.nullMatrix();
+            for (int i = 0; i < f.Length; i++)
+                f[i] = 0;
+            MatrixFilling();
+            los = new LOS();
+            result = los.makeSLAU(matrix, f);
+            return true;
         }
         void MatrixFilling()
         {
@@ -107,8 +120,8 @@ namespace Spline.sources
                                     hx, hy, grid.points[indexOfPoints[k]].x, grid.points[indexOfPoints[k]].y) *
                                     basis.Psi(jj, grid.x[i], grid.x[j], hx, hy,
                                         grid.points[indexOfPoints[k]].x, grid.points[indexOfPoints[k]].y)
-                                    + basis.secondComp(0, ii, jj, hx, hy)
-                                    + basis.thirdComp(0, ii, jj, hx, hy));
+                                    + basis.secondComp(alphaComponent, ii, jj, hx, hy)
+                                    + basis.thirdComp(betaComponent, ii, jj, hx, hy));
                             }
                             f[indexInMatrix[ii]] += grid.omega[k] * basis.Psi(ii, grid.x[i], grid.y[j], hx, hy,
                                 grid.points[indexOfPoints[k]].x, grid.points[indexOfPoints[k]].y) * (grid.f[indexOfPoints[k]]);// + grid.error[k]);
